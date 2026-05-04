@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Admin Approval Portal</h3>
+<div class="row">
+    {% for m in pending %}
+    <div class="col-md-4 mb-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <h6>Student ID: {{ m.student_id }}</h6>
+                <p>Subject: {{ m.subject }} | Score: <strong>{{ m.score }}</strong></p>
+                <a href="/approve/{{ m.id }}" class="btn btn-primary btn-sm">Approve Marks</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

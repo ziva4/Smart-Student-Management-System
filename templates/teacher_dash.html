@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Teacher Dashboard</h3>
+<div class="card p-3">
+    <h5>Manage Student Marks</h5>
+    <table class="table">
+        <thead><tr><th>Student Name</th><th>Action</th></tr></thead>
+        <tbody>
+            {% for s in students %}
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>
+                    <form action="/add_marks/{{ s.id }}" method="POST" class="row g-2">
+                        <div class="col-auto"><input type="text" name="subject" placeholder="Subject" class="form-control form-control-sm" required></div>
+                        <div class="col-auto"><input type="number" name="score" placeholder="Marks" class="form-control form-control-sm" required></div>
+                        <div class="col-auto"><button type="submit" class="btn btn-sm btn-success">Submit for Approval</button></div>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

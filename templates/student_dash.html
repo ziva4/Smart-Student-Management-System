@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>My Academic Progress</h3>
+<div class="row">
+    {% for m in marks %}
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-header bg-dark text-white">{{ m.subject }}</div>
+            <div class="card-body"><h1>{{ m.score }}</h1></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
