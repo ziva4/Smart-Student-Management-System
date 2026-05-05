@@ -1,14 +1,17 @@
 {% extends 'layout.html' %}
 {% block content %}
-<h3>My Academic Progress</h3>
-<div class="row">
-    {% for m in marks %}
-    <div class="col-md-3">
-        <div class="card text-center shadow-sm">
-            <div class="card-header bg-dark text-white">{{ m.subject }}</div>
-            <div class="card-body"><h1>{{ m.score }}</h1></div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
+
+<h2>Student Dashboard</h2>
+
+{% if alert %}
+<div class="alert alert-danger">{{ alert }}</div>
+{% endif %}
+
+<h4>Attendance: {{ percent }}%</h4>
+
+<h4>Marks</h4>
+{% for m in marks %}
+<p>{{ m.subject }} - {{ m.score }}</p>
+{% endfor %}
+
 {% endblock %}

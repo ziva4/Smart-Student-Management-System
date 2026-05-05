@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h2>{{ student.name }}</h2>
+
+<h4>Add Marks</h4>
+<form method="POST" action="/add_marks/{{ student.id }}">
+    <input name="subject" placeholder="Subject" class="form-control mb-2">
+    <input name="score" placeholder="Score" class="form-control mb-2">
+    <button class="btn btn-success">Add</button>
+</form>
+
+<hr>
+
+<h4>Marks</h4>
+<table class="table">
+{% for m in marks %}
+<tr>
+<form method="POST" action="/edit_mark/{{ m.id }}">
+<td><input name="subject" value="{{ m.subject }}"></td>
+<td><input name="score" value="{{ m.score }}"></td>
+<td>{{ m.status }}</td>
+<td>
+<button class="btn btn-warning btn-sm">Update</button>
+<a href="/delete_mark/{{ m.id }}" class="btn btn-danger btn-sm">Delete</a>
+</td>
+</form>
+</tr>
+{% endfor %}
+</table>
+
+<hr>
+
+<h4>Attendance</h4>
+<form method="POST" action="/mark_attendance/{{ student.id }}">
+    <input name="date" placeholder="YYYY-MM-DD" class="form-control mb-2">
+    <select name="status" class="form-control mb-2">
+        <option>Present</option>
+        <option>Absent</option>
+    </select>
+    <button class="btn btn-success">Mark</button>
+</form>
+
+<ul>
+{% for a in attendance %}
+<li>{{ a.date }} - {{ a.status }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
