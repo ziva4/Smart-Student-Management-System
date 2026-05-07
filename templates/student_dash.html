@@ -3,8 +3,9 @@
 
 <div class="container mt-5">
 
-    <!-- TITLE -->
+    <!-- PAGE TITLE -->
     <div class="mb-4">
+
         <h1 class="fw-bold">
             Student Dashboard
         </h1>
@@ -12,39 +13,47 @@
         <p class="text-muted">
             Welcome, {{ current_user.name }}
         </p>
+
     </div>
+
 
     <!-- ALERT -->
     {% if alert %}
-    <div class="alert alert-danger">
+
+    <div class="alert alert-danger shadow-sm">
+
         {{ alert }}
+
     </div>
+
     {% endif %}
 
-    <!-- CARDS -->
-    <div class="row mb-4">
 
-        <!-- ATTENDANCE -->
+    <!-- TOP CARDS -->
+    <div class="row g-4 mb-5">
+
+        <!-- ATTENDANCE CARD -->
         <div class="col-md-6">
 
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 h-100">
 
                 <div class="card-body">
 
                     <h5 class="text-primary">
-                        Attendance
+                        Attendance Percentage
                     </h5>
 
                     <h2 class="fw-bold">
                         {{ percent }}%
                     </h2>
 
-                    <div class="progress mt-3">
+                    <div class="progress mt-3" style="height: 22px;">
 
                         {% if percent >= 75 %}
 
-                        <div class="progress-bar bg-success"
-                             style="width: {{ percent }}%">
+                        <div
+                            class="progress-bar bg-success"
+                            style="width: {{ percent | int }}%">
 
                             {{ percent }}%
 
@@ -52,8 +61,9 @@
 
                         {% else %}
 
-                        <div class="progress-bar bg-danger"
-                             style="width: {{ percent }}%">
+                        <div
+                            class="progress-bar bg-danger"
+                            style="width: {{ percent | int }}%">
 
                             {{ percent }}%
 
@@ -69,15 +79,16 @@
 
         </div>
 
+
         <!-- SUBJECT COUNT -->
         <div class="col-md-6">
 
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 h-100">
 
                 <div class="card-body">
 
                     <h5 class="text-success">
-                        Subjects
+                        Subjects Recorded
                     </h5>
 
                     <h2 class="fw-bold">
@@ -98,15 +109,15 @@
 
 
     <!-- MARKS TABLE -->
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="card shadow-sm border-0 mb-5">
 
         <div class="card-body">
 
-            <h4 class="mb-3">
+            <h4 class="mb-4">
                 Marks Overview
             </h4>
 
-            <table class="table table-hover">
+            <table class="table table-hover align-middle">
 
                 <thead class="table-primary">
 
@@ -123,7 +134,7 @@
 
                 <tr>
 
-                    <td>
+                    <td class="fw-semibold">
                         {{ m.subject }}
                     </td>
 
@@ -131,19 +142,19 @@
 
                         {% if m.score >= 75 %}
 
-                            <span class="badge bg-success">
+                            <span class="badge bg-success fs-6">
                                 {{ m.score }}
                             </span>
 
                         {% elif m.score >= 40 %}
 
-                            <span class="badge bg-warning text-dark">
+                            <span class="badge bg-warning text-dark fs-6">
                                 {{ m.score }}
                             </span>
 
                         {% else %}
 
-                            <span class="badge bg-danger">
+                            <span class="badge bg-danger fs-6">
                                 {{ m.score }}
                             </span>
 
@@ -182,22 +193,13 @@
 </div>
 
 
-<!-- CHART JS -->
+<!-- CHART.JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 
-    const labels = [
-        {% for m in marks %}
-            "{{ m.subject }}",
-        {% endfor %}
-    ];
-
-    const scores = [
-        {% for m in marks %}
-            {{ m.score }},
-        {% endfor %}
-    ];
+    const labels = {{ marks | map(attribute='subject') | list | tojson }};
+    const scores = {{ marks | map(attribute='score') | list | tojson }};
 
     const ctx = document.getElementById('marksChart');
 
@@ -223,7 +225,7 @@
                     '#e74a3b'
                 ],
 
-                borderRadius: 8
+                borderRadius: 10
 
             }]
 
@@ -232,6 +234,14 @@
         options: {
 
             responsive: true,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            },
 
             scales: {
 
@@ -248,4 +258,4 @@
 
 </script>
 
-{% endblock %}D
+{% endblock %}
