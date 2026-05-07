@@ -1,15 +1,82 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-<h2>Teacher Dashboard</h2>
+<div class="container mt-5">
 
-<table class="table">
-{% for s in students %}
-<tr>
-<td>{{ s.name }}</td>
-<td><a href="/student/{{ s.id }}" class="btn btn-primary">View</a></td>
-</tr>
-{% endfor %}
-</table>
+    <h1 class="mb-4 fw-bold">
+        Teacher Dashboard
+    </h1>
+
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+
+        <thead class="table-primary">
+
+            <tr>
+                <th>Student Name</th>
+                <th>Attendance</th>
+                <th>Manage</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for s in students %}
+        <tr>
+
+            <!-- STUDENT NAME -->
+            <td class="fw-semibold">
+                {{ s.name }}
+            </td>
+
+            <!-- QUICK ATTENDANCE -->
+            <td>
+
+                <div class="d-flex gap-2">
+
+                    <!-- PRESENT -->
+                    <form method="POST"
+                          action="/quick_attendance/{{ s.id }}/Present">
+
+                        <button class="btn btn-success btn-sm">
+                            Present
+                        </button>
+
+                    </form>
+
+                    <!-- ABSENT -->
+                    <form method="POST"
+                          action="/quick_attendance/{{ s.id }}/Absent">
+
+                        <button class="btn btn-danger btn-sm">
+                            Absent
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </td>
+
+            <!-- VIEW DETAILS -->
+            <td>
+
+                <a href="/student/{{ s.id }}"
+                   class="btn btn-primary btn-sm">
+
+                    View / Update
+
+                </a>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
 
 {% endblock %}

@@ -1,17 +1,261 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-<h2>Student Dashboard</h2>
+<div class="container mt-5">
 
-{% if alert %}
-<div class="alert alert-danger">{{ alert }}</div>
-{% endif %}
+    <!-- PAGE TITLE -->
+    <div class="mb-4">
 
-<h4>Attendance: {{ percent }}%</h4>
+        <h1 class="fw-bold">
+            Student Dashboard
+        </h1>
 
-<h4>Marks</h4>
-{% for m in marks %}
-<p>{{ m.subject }} - {{ m.score }}</p>
-{% endfor %}
+        <p class="text-muted">
+            Welcome, {{ current_user.name }}
+        </p>
+
+    </div>
+
+
+    <!-- ALERT -->
+    {% if alert %}
+
+    <div class="alert alert-danger shadow-sm">
+
+        {{ alert }}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- TOP CARDS -->
+    <div class="row g-4 mb-5">
+
+        <!-- ATTENDANCE CARD -->
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h5 class="text-primary">
+                        Attendance Percentage
+                    </h5>
+
+                    <h2 class="fw-bold">
+                        {{ percent }}%
+                    </h2>
+
+                    <div class="progress mt-3" style="height: 22px;">
+
+                        {% if percent >= 75 %}
+
+                        <div
+                            class="progress-bar bg-success"
+                            style="width: {{ percent | int }}%">
+
+                            {{ percent }}%
+
+                        </div>
+
+                        {% else %}
+
+                        <div
+                            class="progress-bar bg-danger"
+                            style="width: {{ percent | int }}%">
+
+                            {{ percent }}%
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBJECT COUNT -->
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h5 class="text-success">
+                        Subjects Recorded
+                    </h5>
+
+                    <h2 class="fw-bold">
+                        {{ marks|length }}
+                    </h2>
+
+                    <p class="text-muted">
+                        Approved subjects available
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MARKS TABLE -->
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-body">
+
+            <h4 class="mb-4">
+                Marks Overview
+            </h4>
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-primary">
+
+                    <tr>
+                        <th>Subject</th>
+                        <th>Score</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for m in marks %}
+
+                <tr>
+
+                    <td class="fw-semibold">
+                        {{ m.subject }}
+                    </td>
+
+                    <td>
+
+                        {% if m.score >= 75 %}
+
+                            <span class="badge bg-success fs-6">
+                                {{ m.score }}
+                            </span>
+
+                        {% elif m.score >= 40 %}
+
+                            <span class="badge bg-warning text-dark fs-6">
+                                {{ m.score }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-danger fs-6">
+                                {{ m.score }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- GRAPH -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            <h4 class="mb-4">
+                Performance Graph
+            </h4>
+
+            <canvas id="marksChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    const labels = {{ marks | map(attribute='subject') | list | tojson }};
+    const scores = {{ marks | map(attribute='score') | list | tojson }};
+
+    const ctx = document.getElementById('marksChart');
+
+    new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: 'Marks',
+
+                data: scores,
+
+                backgroundColor: [
+                    '#4e73df',
+                    '#1cc88a',
+                    '#36b9cc',
+                    '#f6c23e',
+                    '#e74a3b'
+                ],
+
+                borderRadius: 10
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            },
+
+            scales: {
+
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+
+            }
+
+        }
+
+    });
+
+</script>
 
 {% endblock %}
