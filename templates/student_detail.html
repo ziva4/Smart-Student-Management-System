@@ -1,50 +1,168 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-<h2>{{ student.name }}</h2>
+<!-- TOP BAR -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ student.name }}</h2>
 
-<h4>Add Marks</h4>
-<form method="POST" action="/add_marks/{{ student.id }}">
-    <input name="subject" placeholder="Subject" class="form-control mb-2">
-    <input name="score" placeholder="Score" class="form-control mb-2">
-    <button class="btn btn-success">Add</button>
-</form>
+    <!-- 🔥 BACK BUTTON -->
+    <a href="/" class="btn btn-secondary">
+        ← Back to Teacher Dashboard
+    </a>
+</div>
 
-<hr>
+<!-- ADD MARKS -->
+<div class="card p-4 mb-4 shadow-sm">
+    <h4 class="mb-3">Add Marks</h4>
 
-<h4>Marks</h4>
-<table class="table">
-{% for m in marks %}
-<tr>
-<form method="POST" action="/edit_mark/{{ m.id }}">
-<td><input name="subject" value="{{ m.subject }}"></td>
-<td><input name="score" value="{{ m.score }}"></td>
-<td>{{ m.status }}</td>
-<td>
-<button class="btn btn-warning btn-sm">Update</button>
-<a href="/delete_mark/{{ m.id }}" class="btn btn-danger btn-sm">Delete</a>
-</td>
-</form>
-</tr>
-{% endfor %}
-</table>
+    <form method="POST" action="/add_marks/{{ student.id }}">
+        <input
+            name="subject"
+            placeholder="Subject"
+            class="form-control mb-3"
+            required>
 
-<hr>
+        <input
+            name="score"
+            placeholder="Score"
+            type="number"
+            class="form-control mb-3"
+            required>
 
-<h4>Attendance</h4>
-<form method="POST" action="/mark_attendance/{{ student.id }}">
-    <input name="date" placeholder="YYYY-MM-DD" class="form-control mb-2">
-    <select name="status" class="form-control mb-2">
-        <option>Present</option>
-        <option>Absent</option>
-    </select>
-    <button class="btn btn-success">Mark</button>
-</form>
+        <button class="btn btn-success">
+            Add Marks
+        </button>
+    </form>
+</div>
 
-<ul>
-{% for a in attendance %}
-<li>{{ a.date }} - {{ a.status }}</li>
-{% endfor %}
-</ul>
+<!-- MARKS TABLE -->
+<div class="card p-4 mb-4 shadow-sm">
+
+    <h4 class="mb-3">Marks</h4>
+
+    <table class="table table-bordered table-hover align-middle">
+
+        <thead class="table-dark">
+            <tr>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for m in marks %}
+        <tr>
+
+            <form method="POST" action="/edit_mark/{{ m.id }}">
+
+                <td>
+                    <input
+                        name="subject"
+                        value="{{ m.subject }}"
+                        class="form-control">
+                </td>
+
+                <td>
+                    <input
+                        name="score"
+                        value="{{ m.score }}"
+                        type="number"
+                        class="form-control">
+                </td>
+
+                <td>
+                    {% if m.status == "Approved" %}
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td class="d-flex gap-2">
+
+                    <button class="btn btn-warning btn-sm">
+                        Update
+                    </button>
+
+                    <a href="/delete_mark/{{ m.id }}"
+                       class="btn btn-danger btn-sm">
+                        Delete
+                    </a>
+
+                </td>
+
+            </form>
+
+        </tr>
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<!-- ATTENDANCE -->
+<div class="card p-4 shadow-sm">
+
+    <h4 class="mb-3">Attendance</h4>
+
+    <form method="POST" action="/mark_attendance/{{ student.id }}">
+
+        <input
+            name="date"
+            type="date"
+            class="form-control mb-3"
+            required>
+
+        <select
+            name="status"
+            class="form-control mb-3">
+
+            <option>Present</option>
+            <option>Absent</option>
+
+        </select>
+
+        <button class="btn btn-primary">
+            Mark Attendance
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h5 class="mb-3">Attendance Records</h5>
+
+    <ul class="list-group">
+
+        {% for a in attendance %}
+        <li class="list-group-item d-flex justify-content-between">
+
+            <span>{{ a.date }}</span>
+
+            {% if a.status == "Present" %}
+                <span class="badge bg-success">
+                    Present
+                </span>
+            {% else %}
+                <span class="badge bg-danger">
+                    Absent
+                </span>
+            {% endif %}
+
+        </li>
+        {% endfor %}
+
+    </ul>
+
+</div>
 
 {% endblock %}
