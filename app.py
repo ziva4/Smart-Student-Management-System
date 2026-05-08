@@ -9,6 +9,7 @@ from flask_login import (
 
 from models import db, User, Attendance, Marks
 from functools import wraps
+from datetime import datetime
 
 
 # ---------------- APP CONFIG ---------------- #
@@ -100,7 +101,9 @@ def register():
         ).first()
 
         if existing_user:
+
             flash("Username already exists")
+
             return redirect(url_for('register'))
 
         role = request.form.get('role')
@@ -193,10 +196,20 @@ def dashboard():
             is_approved=False
         ).all()
 
+        students = User.query.filter_by(
+            role='student'
+        ).all()
+
+        teachers = User.query.filter_by(
+            role='teacher'
+        ).all()
+
         return render_template(
             'admin_dash.html',
             pending_marks=pending_marks,
-            pending_teachers=pending_teachers
+            pending_teachers=pending_teachers,
+            students=students,
+            teachers=teachers
         )
 
 
@@ -240,7 +253,7 @@ def add_marks(sid):
     db.session.add(mark)
     db.session.commit()
 
-    flash("Marks added successfully")
+    flash("Marks added")
 
     return redirect(url_for(
         'student_detail',
@@ -256,8 +269,6 @@ def edit_mark(mid):
 
     mark.subject = request.form['subject']
     mark.score = request.form['score']
-
-    # Reset approval
     mark.status = "Pending"
 
     db.session.commit()
@@ -300,10 +311,9 @@ def mark_attendance(sid):
         date=request.form['date']
     ).first()
 
-    # Prevent duplicate attendance
     if existing:
 
-        flash("Attendance already exists for this date")
+        flash("Attendance already exists")
 
         return redirect(url_for(
             'student_detail',
@@ -327,7 +337,6 @@ def mark_attendance(sid):
     ))
 
 
-# 🔄 Toggle Attendance
 @app.route('/toggle_attendance/<int:aid>', methods=['POST'])
 @role_required(['teacher'])
 def toggle_attendance(aid):
@@ -349,7 +358,6 @@ def toggle_attendance(aid):
     ))
 
 
-# 🗑 Delete Attendance
 @app.route('/delete_attendance/<int:aid>')
 @role_required(['teacher'])
 def delete_attendance(aid):
@@ -369,42 +377,7 @@ def delete_attendance(aid):
     ))
 
 
-# ---------------- ADMIN ---------------- #
-
-@app.route('/approve_mark/<int:mid>')
-@role_required(['admin'])
-def approve_mark(mid):
-
-    mark = Marks.query.get(mid)
-
-    mark.status = "Approved"
-
-    db.session.commit()
-
-    flash("Marks approved")
-
-    return redirect(url_for('dashboard'))
-
-
-#  Approve Teacher
-@app.route('/approve_teacher/<int:uid>')
-@role_required(['admin'])
-def approve_teacher(uid):
-
-    user = User.query.get(uid)
-
-    user.is_approved = True
-
-    db.session.commit()
-
-    flash("Teacher approved")
-
-    return redirect(url_for('dashboard'))
-
 # ---------------- QUICK ATTENDANCE ---------------- #
-
-from datetime import datetime
-
 
 @app.route('/quick_attendance/<int:sid>/<status>', methods=['POST'])
 @role_required(['teacher'])
@@ -417,7 +390,6 @@ def quick_attendance(sid, status):
         date=today
     ).first()
 
-    # If already marked today -> update it
     if existing:
 
         existing.status = status
@@ -437,6 +409,78 @@ def quick_attendance(sid, status):
         flash("Attendance marked")
 
     db.session.commit()
+
+    return redirect(url_for('dashboard'))
+
+
+# ---------------- ADMIN ---------------- #
+
+@app.route('/approve_mark/<int:mid>')
+@role_required(['admin'])
+def approve_mark(mid):
+
+    mark = Marks.query.get(mid)
+
+    mark.status = "Approved"
+
+    db.session.commit()
+
+    flash("Marks approved")
+
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/approve_teacher/<int:uid>')
+@role_required(['admin'])
+def approve_teacher(uid):
+
+    user = User.query.get(uid)
+
+    user.is_approved = True
+
+    db.session.commit()
+
+    flash("Teacher approved")
+
+    return redirect(url_for('dashboard'))
+
+
+# DELETE STUDENT
+@app.route('/delete_student/<int:uid>')
+@role_required(['admin'])
+def delete_student(uid):
+
+    user = User.query.get(uid)
+
+    Marks.query.filter_by(
+        student_id=uid
+    ).delete()
+
+    Attendance.query.filter_by(
+        student_id=uid
+    ).delete()
+
+    db.session.delete(user)
+
+    db.session.commit()
+
+    flash("Student deleted")
+
+    return redirect(url_for('dashboard'))
+
+
+# DELETE TEACHER
+@app.route('/delete_teacher/<int:uid>')
+@role_required(['admin'])
+def delete_teacher(uid):
+
+    user = User.query.get(uid)
+
+    db.session.delete(user)
+
+    db.session.commit()
+
+    flash("Teacher deleted")
 
     return redirect(url_for('dashboard'))
 
@@ -462,7 +506,6 @@ if __name__ == '__main__':
 
         db.create_all()
 
-        # Create default admin
         if not User.query.filter_by(
             role='admin'
         ).first():
