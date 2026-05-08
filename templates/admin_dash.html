@@ -1,20 +1,254 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-<h3>Pending Teachers</h3>
-{% for t in pending_teachers %}
-<p>{{ t.username }}
-<a href="/approve_teacher/{{ t.id }}" class="btn btn-success btn-sm">Approve</a>
-</p>
-{% endfor %}
+<div class="container mt-5">
 
-<hr>
+    <h1 class="fw-bold mb-4">
+        Admin Dashboard
+    </h1>
 
-<h3>Pending Marks</h3>
-{% for m in pending_marks %}
-<p>{{ m.subject }} - {{ m.score }}
-<a href="/approve_mark/{{ m.id }}" class="btn btn-primary btn-sm">Approve</a>
-</p>
-{% endfor %}
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="alert alert-info">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+
+    <!-- TEACHER APPROVAL -->
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-body">
+
+            <h3 class="mb-4 text-primary">
+                Pending Teacher Approvals
+            </h3>
+
+            <table class="table table-hover">
+
+                <thead class="table-primary">
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for t in pending_teachers %}
+
+                <tr>
+
+                    <td>{{ t.name }}</td>
+
+                    <td>{{ t.username }}</td>
+
+                    <td>
+
+                        <a href="/approve_teacher/{{ t.id }}"
+                           class="btn btn-success btn-sm">
+
+                            Approve
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- MARK APPROVAL -->
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-body">
+
+            <h3 class="mb-4 text-success">
+                Pending Marks Approval
+            </h3>
+
+            <table class="table table-hover">
+
+                <thead class="table-success">
+
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Subject</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for m in pending_marks %}
+
+                <tr>
+
+                    <td>{{ m.student_id }}</td>
+
+                    <td>{{ m.subject }}</td>
+
+                    <td>{{ m.score }}</td>
+
+                    <td>
+
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <a href="/approve_mark/{{ m.id }}"
+                           class="btn btn-primary btn-sm">
+
+                            Approve
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ALL STUDENTS -->
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-body">
+
+            <h3 class="mb-4 text-dark">
+                All Students
+            </h3>
+
+            <table class="table table-bordered">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for s in students %}
+
+                <tr>
+
+                    <td>{{ s.id }}</td>
+
+                    <td>{{ s.name }}</td>
+
+                    <td>{{ s.username }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ALL TEACHERS -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            <h3 class="mb-4 text-dark">
+                All Teachers
+            </h3>
+
+            <table class="table table-bordered">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for t in teachers %}
+
+                <tr>
+
+                    <td>{{ t.id }}</td>
+
+                    <td>{{ t.name }}</td>
+
+                    <td>{{ t.username }}</td>
+
+                    <td>
+
+                        {% if t.is_approved %}
+
+                            <span class="badge bg-success">
+                                Approved
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-warning text-dark">
+                                Pending
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}
